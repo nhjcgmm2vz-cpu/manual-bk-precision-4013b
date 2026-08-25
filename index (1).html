@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>4013B · Guía de laboratorio</title>
+<meta name="description" content="Qué hace cada botón del generador de funciones DDS B&amp;K Precision 4013B. Guía rápida de laboratorio.">
+<meta name="theme-color" content="#E4E1D6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121A24" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E4E1D6; --card:#F2F0E9; --ink:#16283F; --ink-2:#455670;
+  --rule:#C6C0B0; --muted:#6F7787; --live:#B03A22;
+  --lcd:#C6DDD6; --lcd-deep:#9FBDB4; --lcd-ink:#10231D;
+  --display:"Barlow Condensed",Impact,"Arial Narrow",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#121A24; --card:#1B242F; --ink:#E6E9EC; --ink-2:#AFB7C0;
+        --rule:#2E3944; --muted:#8A939E; --live:#E8785A;}
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);
+  font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;overflow-wrap:break-word}
+body.lock{overflow:hidden}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+.wrap{max-width:780px;margin:0 auto;padding:0 16px calc(56px + env(safe-area-inset-bottom))}
+a{color:var(--ink)}
+
+.hero{padding:22px 0 16px}
+.brand{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0}
+h1{font-family:var(--display);font-weight:700;text-transform:uppercase;
+   font-size:clamp(64px,19vw,124px);line-height:.8;margin:4px 0 8px}
+.tagline{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+   font-size:clamp(17px,4.6vw,23px);line-height:1.15;margin:0 0 16px;color:var(--ink-2)}
+.strip{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);
+   border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.strip div{background:var(--bg);padding:9px 10px 10px}
+.strip dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 2px}
+.strip dd{margin:0;font-family:var(--mono);font-size:14px;font-weight:600}
+
+.jump{position:sticky;top:0;z-index:30;margin:0 -16px;
+  background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule)}
+.jump ul{display:flex;overflow-x:auto;list-style:none;margin:0;padding:0 10px;scrollbar-width:none}
+.jump ul::-webkit-scrollbar{display:none}
+.jump a{display:block;white-space:nowrap;padding:13px 11px;text-decoration:none;
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.jump a:active{color:var(--ink)}
+
+section{margin-top:34px;scroll-margin-top:56px}
+.sec-head{display:flex;align-items:baseline;gap:10px;border-bottom:1.5px solid var(--ink);padding-bottom:6px;margin-bottom:14px}
+.sec-num{font-family:var(--mono);font-size:11px;color:var(--live);letter-spacing:.08em}
+h2{font-family:var(--display);font-weight:700;text-transform:uppercase;
+   font-size:clamp(25px,7vw,34px);line-height:1;margin:0}
+.lede{color:var(--ink-2);margin:0 0 16px;font-size:15.5px}
+
+.panel-box{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:8px}
+#panelHost svg.panel{width:100%;height:auto;display:block;touch-action:manipulation}
+.panel-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
+.panel-bar p{margin:0;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.zoom-btn{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--ink);color:var(--bg);border:1px solid var(--ink);border-radius:999px;
+  padding:11px 18px;min-height:44px;cursor:pointer}
+.zoom-btn:active{opacity:.75}
+
+.ctl{cursor:pointer}
+.ctl .hit{fill:transparent}
+.ring{fill:none;stroke:#B03A22;stroke-width:3;opacity:0}
+.ctl.on .ring{opacity:1}
+.ctl.on .cap{fill:#FFE08A;stroke:#B03A22}
+.ctl:focus-visible{outline:none}
+.ctl:focus-visible .ring{opacity:1;stroke-dasharray:6 4}
+
+/* ---------- pantalla completa ---------- */
+.fs{position:fixed;inset:0;z-index:100;background:#0C1219;
+  display:flex;align-items:center;justify-content:center;overscroll-behavior:contain;overflow:hidden}
+.fs[hidden]{display:none}
+.fs-rot{position:relative;line-height:0;width:100vw;flex:0 0 auto}
+@media (orientation:portrait){
+  .fs-rot{transform:rotate(90deg)}
+}
+.fs-rot svg.panel{display:block;width:100%;height:auto}
+.fs-close,.fs-tip{position:absolute;z-index:4;font-family:var(--mono);
+  font-size:12px;letter-spacing:.08em;text-transform:uppercase;line-height:1}
+.fs-close{top:2%;right:1.6%;background:#16283F;color:#EBE8DE;border:0;
+  border-radius:999px;padding:11px 16px;min-height:42px;cursor:pointer}
+.fs-close:active{opacity:.75}
+.fs-tip{left:1.6%;bottom:3%;color:#8FA0B4;pointer-events:none}
+
+.pop{position:absolute;z-index:3;background:var(--lcd);color:var(--lcd-ink);
+  border:1px solid #6E8880;border-radius:4px;padding:.75em .85em;line-height:1.4;
+  box-shadow:0 8px 26px rgba(0,0,0,.45);text-align:left}
+.pop[hidden]{display:none}
+.pop h4{margin:0 0 .3em;font-family:var(--display);font-weight:700;text-transform:uppercase;
+  font-size:1.3em;line-height:1.05;letter-spacing:.02em}
+.pop p{margin:0;font-size:1em}
+.pop .num{font-family:var(--mono);font-size:.75em;opacity:.65;letter-spacing:.1em;display:block;margin-bottom:.15em}
+.pop::after{content:"";position:absolute;width:.62em;height:.62em;background:var(--lcd);
+  border:1px solid #6E8880;transform:rotate(45deg)}
+.pop.pr::after{left:-.35em;top:calc(var(--cy,50%) - .31em);border-right:0;border-top:0}
+.pop.pl::after{right:-.35em;top:calc(var(--cy,50%) - .31em);border-left:0;border-bottom:0}
+.pop.pb::after{top:-.35em;left:calc(50% - .31em);border-right:0;border-bottom:0}
+.pop.pt::after{bottom:-.35em;left:calc(50% - .31em);border-left:0;border-top:0}
+
+.ctl-list{margin-top:18px;border-top:1px solid var(--rule)}
+.row{border-bottom:1px solid var(--rule)}
+.row>summary{display:flex;align-items:center;gap:12px;list-style:none;cursor:pointer;padding:15px 4px;min-height:56px}
+.row>summary::-webkit-details-marker{display:none}
+.row>summary:active{background:var(--card)}
+.badge{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);min-width:34px}
+.nm{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.03em;
+  font-size:20px;line-height:1.05;flex:1}
+.chev{font-family:var(--mono);color:var(--muted);font-size:18px;line-height:1}
+.row[open] .chev,.row[open] .nm{color:var(--live)}
+
+.lcd{background:var(--lcd);color:var(--lcd-ink);border-radius:3px;padding:15px 15px 16px;margin:0 0 15px;
+  box-shadow:inset 0 0 0 3px rgba(0,0,0,.06);
+  background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.04) 0 1px,transparent 1px 3px)}
+.lcd p{margin:0;font-size:15.5px;line-height:1.55}
+.lcd .tip{font-family:var(--mono);font-size:13.5px;line-height:1.5;
+  border-top:1px solid rgba(16,35,29,.3);padding-top:10px;margin-top:11px}
+.lcd .tip b{display:block;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  font-size:10.5px;opacity:.72;margin-bottom:3px}
+
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0;border-top:1px solid var(--rule)}
+ol.steps li{counter-increment:s;padding:14px 0 15px 46px;border-bottom:1px solid var(--rule);position:relative}
+ol.steps li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:16px;
+  font-family:var(--mono);font-size:12px;font-weight:600;color:var(--live)}
+ol.steps b{font-weight:600}
+ol.steps span{display:block;color:var(--ink-2);font-size:15px;margin-top:3px}
+
+.blk{border-bottom:1px solid var(--rule)}
+.blk>summary{list-style:none;cursor:pointer;padding:17px 30px 17px 0;position:relative;min-height:56px;
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.03em;font-size:21px;font-weight:600;line-height:1.1}
+.blk>summary::-webkit-details-marker{display:none}
+.blk>summary::after{content:"+";position:absolute;right:2px;top:15px;font-family:var(--mono);font-size:21px;color:var(--muted);font-weight:400}
+.blk[open]>summary::after{content:"–"}
+.blk[open]>summary{color:var(--live)}
+.bd{padding:0 0 20px}
+.bd p{margin:0 0 12px;font-size:15.5px;color:var(--ink-2)}
+.bd p b,.bd li b{color:var(--ink);font-weight:600}
+.bd ul{margin:0 0 14px;padding-left:19px}
+.bd li{margin-bottom:8px;font-size:15.5px;color:var(--ink-2)}
+
+.tbl{border-top:1px solid var(--ink);margin:0 0 16px}
+.tbl .r{display:grid;grid-template-columns:1fr;gap:1px 14px;padding:11px 0;border-bottom:1px solid var(--rule)}
+.tbl .k{font-family:var(--mono);font-size:13.5px;font-weight:600}
+.tbl .v{font-size:15px;color:var(--ink-2)}
+@media (min-width:560px){.tbl .r{grid-template-columns:minmax(150px,34%) 1fr}}
+.m{font-family:var(--mono);font-size:.9em;background:color-mix(in srgb,var(--ink) 9%,transparent);padding:1px 5px;border-radius:2px}
+
+.warn{border-left:3px solid var(--live);background:var(--card);padding:12px 14px;margin:0 0 15px}
+.warn b{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--live);display:block;margin-bottom:3px}
+.warn p{margin:0;font-size:15px}
+
+.top{display:block;margin:26px 0 0;text-align:center;font-family:var(--mono);font-size:12px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:14px}
+footer{margin-top:34px;border-top:1.5px solid var(--ink);padding-top:14px;
+  font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.75}
+
+@media print{
+  body{background:#fff;color:#000;font-size:11pt}
+  .jump,.panel-bar,.top,.fs{display:none}
+  .lcd{background:#fff;color:#000;box-shadow:none;border:1px solid #999;background-image:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero" id="top">
+  <p class="brand">B&amp;K Precision · Laboratorio UVM</p>
+  <h1>4013B</h1>
+  <p class="tagline">Generador de funciones DDS con barrido</p>
+  <dl class="strip">
+    <div><dt>Seno / cuadrada</dt><dd>0.1 Hz – 12 MHz</dd></div>
+    <div><dt>Triangular</dt><dd>0.1 Hz – 1 MHz</dd></div>
+    <div><dt>Amplitud (50 Ω)</dt><dd>10 mV – 10 Vpp</dd></div>
+    <div><dt>Offset (50 Ω)</dt><dd>± 4.5 V</dd></div>
+  </dl>
+</header>
+
+<nav class="jump" aria-label="Secciones">
+  <ul>
+    <li><a href="#panel">Botones</a></li>
+    <li><a href="#pasos">Paso a paso</a></li>
+    <li><a href="#menus">Menús</a></li>
+    <li><a href="#ohms">50 Ω</a></li>
+    <li><a href="#errores">Errores</a></li>
+    <li><a href="#limites">Límites</a></li>
+    <li><a href="#seguridad">Seguridad</a></li>
+  </ul>
+</nav>
+
+<section id="panel">
+  <div class="sec-head"><span class="sec-num">01</span><h2>¿Qué hace este botón?</h2></div>
+  <p class="lede">Toca un control en el panel, o ábrelo a pantalla completa para verlo en grande.</p>
+
+  <div class="panel-box">
+    <div id="panelHost">
+    <svg class="panel" id="svgPanel" viewBox="0 0 800 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Panel frontal del generador 4013B">
+      <defs>
+        <linearGradient id="chas" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#92A0B8"/><stop offset="1" stop-color="#687793"/>
+        </linearGradient>
+        <linearGradient id="knb" x1="0" y1="0" x2="0.3" y2="1">
+          <stop offset="0" stop-color="#DEE0E2"/><stop offset="0.55" stop-color="#B4B9BE"/><stop offset="1" stop-color="#8D9399"/>
+        </linearGradient>
+        <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#D2E6DF"/><stop offset="1" stop-color="#B8D4CC"/>
+        </linearGradient>
+        <style>
+          .bk{font-family:Helvetica,Arial,sans-serif;fill:#1B3B6F}
+          .kb{font-family:Helvetica,Arial,sans-serif;fill:#1F3358;font-size:12px;text-anchor:middle;pointer-events:none}
+          .kw{font-family:Helvetica,Arial,sans-serif;fill:#23262B;font-size:15px;text-anchor:middle;pointer-events:none}
+          .ku{font-family:Helvetica,Arial,sans-serif;fill:#1F3358;font-size:8.5px;text-anchor:middle;pointer-events:none}
+          .sl{font-family:Helvetica,Arial,sans-serif;fill:#3A4A63;font-size:10.5px;text-anchor:middle}
+          .ld{font-family:"IBM Plex Mono",monospace;fill:#10231D}
+          .cn{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;fill:#FFF;text-anchor:middle;pointer-events:none}
+          .cap{fill:#B4BED9;stroke:#8B98BC;stroke-width:1}
+          .capw{fill:#F5F4EF;stroke:#C6C3B9;stroke-width:1}
+        </style>
+      </defs>
+
+      <rect x="6" y="10" width="788" height="336" rx="30" fill="url(#chas)"/>
+      <rect x="14" y="18" width="772" height="320" rx="24" fill="none" stroke="#5C6B87" stroke-width="1.5"/>
+      <rect x="130" y="340" width="46" height="18" rx="4" fill="#4F5C74"/>
+      <rect x="250" y="340" width="46" height="18" rx="4" fill="#4F5C74"/>
+      <rect x="510" y="340" width="46" height="18" rx="4" fill="#4F5C74"/>
+      <rect x="630" y="340" width="46" height="18" rx="4" fill="#4F5C74"/>
+      <rect x="72" y="28" width="668" height="300" rx="4" fill="#EBE8DE" stroke="#C4BFB1"/>
+
+      <text class="bk" x="96" y="62" font-size="19" font-weight="700" letter-spacing="0.4">B&amp;K PRECISION</text>
+      <text class="bk" x="288" y="62" font-size="19" font-weight="700">4013B</text>
+      <text class="bk" x="352" y="62" font-size="14">12 MHz DDS Function Generator</text>
+
+      <g class="ctl" data-id="lcd" role="button" tabindex="0" aria-label="Pantalla LCD">
+        <rect class="ring" x="92" y="76" width="260" height="106" rx="4"/>
+        <rect x="96" y="80" width="252" height="98" rx="3" fill="#4E545C"/>
+        <rect x="101" y="85" width="242" height="88" fill="url(#glass)"/>
+        <text class="ld" x="112" y="112" font-size="14">Freq:</text>
+        <text class="ld" x="158" y="114" font-size="19" font-weight="600">1.0000 kHz</text>
+        <text class="ld" x="112" y="141" font-size="14">Ampl:</text>
+        <text class="ld" x="158" y="143" font-size="19" font-weight="600">5.00 V</text>
+        <rect x="272" y="92" width="64" height="54" fill="none" stroke="#10231D"/>
+        <path d="M278 119 q7,-20 14,0 t14,0 t14,0" fill="none" stroke="#10231D" stroke-width="2"/>
+        <rect x="105" y="151" width="52" height="18" fill="#10231D"/>
+        <text class="ld" x="131" y="164" font-size="11.5" fill="#C6DDD6" text-anchor="middle">FREQ</text>
+        <text class="ld" x="183" y="164" font-size="11.5" text-anchor="middle">AMPL</text>
+        <text class="ld" x="235" y="164" font-size="11.5" text-anchor="middle">OFST</text>
+        <line x1="159" y1="151" x2="159" y2="169" stroke="#10231D"/>
+        <line x1="209" y1="151" x2="209" y2="169" stroke="#10231D"/>
+        <line x1="261" y1="151" x2="261" y2="169" stroke="#10231D"/>
+        <rect class="hit" x="92" y="76" width="260" height="106"/>
+      </g>
+      <circle cx="86" cy="92" r="9" fill="#1B3B6F"/><text class="cn" x="86" y="96">2</text>
+
+      <g class="ctl" data-id="fkeys" role="button" tabindex="0" aria-label="Teclas F1 a F4">
+        <rect class="ring" x="110" y="192" width="244" height="36" rx="4"/>
+        <rect class="cap" x="114" y="196" width="50" height="28" rx="4"/><text class="kb" x="139" y="215">F1</text>
+        <rect class="cap" x="176" y="196" width="50" height="28" rx="4"/><text class="kb" x="201" y="215">F2</text>
+        <rect class="cap" x="238" y="196" width="50" height="28" rx="4"/><text class="kb" x="263" y="215">F3</text>
+        <rect class="cap" x="300" y="196" width="50" height="28" rx="4"/><text class="kb" x="325" y="215">F4</text>
+        <rect class="hit" x="110" y="190" width="244" height="40"/>
+      </g>
+      <circle cx="98" cy="210" r="9" fill="#1B3B6F"/><text class="cn" x="98" y="214">3</text>
+
+      <g class="ctl" data-id="power" role="button" tabindex="0" aria-label="Interruptor de encendido">
+        <rect class="ring" x="78" y="238" width="42" height="52" rx="4"/>
+        <text x="84" y="250" class="bk" font-size="11" font-family="Helvetica,Arial,sans-serif">O  |</text>
+        <rect class="cap" x="84" y="256" width="28" height="30" rx="3"/>
+        <rect x="88" y="260" width="20" height="22" rx="2" fill="#EFEEE9" stroke="#B9B6AC"/>
+        <rect class="hit" x="74" y="234" width="54" height="62"/>
+      </g>
+      <circle cx="136" cy="268" r="9" fill="#1B3B6F"/><text class="cn" x="136" y="272">1</text>
+
+      <g class="ctl" data-id="wave" role="button" tabindex="0" aria-label="Botones de forma de onda">
+        <rect class="ring" x="378" y="80" width="54" height="128" rx="4"/>
+        <rect class="cap" x="382" y="84" width="46" height="34" rx="4"/>
+        <text class="kb" x="405" y="98" font-size="10.5">SINE</text>
+        <path d="M394 108 q5,-9 10,0 t10,0" fill="none" stroke="#1F3358" stroke-width="1.6"/>
+        <rect class="cap" x="382" y="126" width="46" height="34" rx="4"/>
+        <text class="kb" x="405" y="140" font-size="10.5">RAMP</text>
+        <path d="M394 151 L404 143 L404 151 L414 143" fill="none" stroke="#1F3358" stroke-width="1.6"/>
+        <rect class="cap" x="382" y="168" width="46" height="36" rx="4"/>
+        <text class="kb" x="405" y="183" font-size="10.5">SQUARE</text>
+        <path d="M394 195 L394 188 L404 188 L404 195 L414 195 L414 188" fill="none" stroke="#1F3358" stroke-width="1.6"/>
+        <rect class="hit" x="378" y="80" width="54" height="128"/>
+      </g>
+      <circle cx="405" cy="70" r="9" fill="#1B3B6F"/><text class="cn" x="405" y="74">4</text>
+
+      <g class="ctl" data-id="keypad" role="button" tabindex="0" aria-label="Teclado numérico">
+        <rect class="ring" x="444" y="82" width="140" height="154" rx="4"/>
+        <rect class="capw" x="448" y="86" width="40" height="32" rx="4"/><text class="kw" x="468" y="108">7</text>
+        <rect class="capw" x="494" y="86" width="40" height="32" rx="4"/><text class="kw" x="514" y="108">8</text>
+        <rect class="capw" x="540" y="86" width="40" height="32" rx="4"/><text class="kw" x="560" y="108">9</text>
+        <rect class="capw" x="448" y="124" width="40" height="32" rx="4"/><text class="kw" x="468" y="146">4</text>
+        <rect class="capw" x="494" y="124" width="40" height="32" rx="4"/><text class="kw" x="514" y="146">5</text>
+        <rect class="capw" x="540" y="124" width="40" height="32" rx="4"/><text class="kw" x="560" y="146">6</text>
+        <rect class="capw" x="448" y="162" width="40" height="32" rx="4"/><text class="kw" x="468" y="184">1</text>
+        <rect class="capw" x="494" y="162" width="40" height="32" rx="4"/><text class="kw" x="514" y="184">2</text>
+        <rect class="capw" x="540" y="162" width="40" height="32" rx="4"/><text class="kw" x="560" y="184">3</text>
+        <rect class="capw" x="448" y="200" width="40" height="32" rx="4"/><text class="kw" x="468" y="222">0</text>
+        <rect class="capw" x="494" y="200" width="40" height="32" rx="4"/><text class="kw" x="514" y="222">.</text>
+        <rect class="capw" x="540" y="200" width="40" height="32" rx="4"/><text class="kw" x="560" y="222">–</text>
+        <rect class="hit" x="444" y="82" width="140" height="154"/>
+      </g>
+      <circle cx="514" cy="70" r="9" fill="#1B3B6F"/><text class="cn" x="514" y="74">11</text>
+
+      <g class="ctl" data-id="units" role="button" tabindex="0" aria-label="Teclas de unidades y ENTER">
+        <rect class="ring" x="582" y="82" width="100" height="154" rx="4"/>
+        <rect class="cap" x="586" y="86" width="42" height="32" rx="4"/>
+        <text class="kb" x="607" y="100" font-size="10.5">MHz</text><text class="ku" x="607" y="111">ns   V</text>
+        <rect class="cap" x="586" y="124" width="42" height="32" rx="4"/>
+        <text class="kb" x="607" y="138" font-size="10.5">KHz</text><text class="ku" x="607" y="149">µs  mV</text>
+        <rect class="cap" x="586" y="162" width="42" height="32" rx="4"/>
+        <text class="kb" x="607" y="176" font-size="10.5">Hz</text><text class="ku" x="607" y="187">ms</text>
+        <rect class="cap" x="586" y="200" width="42" height="32" rx="4"/>
+        <text class="kb" x="607" y="214" font-size="10.5">mHz</text><text class="ku" x="607" y="225">s</text>
+        <rect class="cap" x="634" y="200" width="44" height="32" rx="4"/>
+        <text class="kb" x="656" y="220" font-size="10.5">ENTER</text>
+        <rect class="hit" x="582" y="82" width="100" height="154"/>
+      </g>
+      <circle cx="607" cy="70" r="9" fill="#1B3B6F"/><text class="cn" x="607" y="74">10</text>
+
+      <g class="ctl" data-id="knob" role="button" tabindex="0" aria-label="Perilla giratoria">
+        <circle class="ring" cx="700" cy="110" r="44"/>
+        <circle cx="700" cy="110" r="38" fill="#7E848A"/>
+        <circle class="cap" cx="700" cy="110" r="35" fill="url(#knb)" stroke="#7C8187"/>
+        <circle cx="700" cy="110" r="23" fill="none" stroke="#9DA2A8"/>
+        <line x1="700" y1="79" x2="700" y2="90" stroke="#6B7076" stroke-width="3"/>
+        <circle class="hit" cx="700" cy="110" r="46"/>
+      </g>
+      <circle cx="650" cy="72" r="9" fill="#1B3B6F"/><text class="cn" x="650" y="76">5</text>
+
+      <g class="ctl" data-id="cursor" role="button" tabindex="0" aria-label="Teclas de cursor">
+        <rect class="ring" x="658" y="158" width="76" height="34" rx="4"/>
+        <rect class="cap" x="662" y="162" width="30" height="26" rx="4"/><text class="kb" x="677" y="180">◁</text>
+        <rect class="cap" x="698" y="162" width="30" height="26" rx="4"/><text class="kb" x="713" y="180">▷</text>
+        <text class="sl" x="695" y="203">Cursor</text>
+        <rect class="hit" x="656" y="156" width="80" height="52"/>
+      </g>
+      <circle cx="644" cy="175" r="9" fill="#1B3B6F"/><text class="cn" x="644" y="179">6</text>
+
+      <g class="ctl" data-id="sweep" role="button" tabindex="0" aria-label="Botón SWEEP">
+        <rect class="ring" x="424" y="244" width="68" height="36" rx="4"/>
+        <rect class="cap" x="428" y="248" width="60" height="28" rx="5"/>
+        <text class="kb" x="458" y="266" font-size="11">SWEEP</text>
+        <rect class="hit" x="424" y="244" width="68" height="36"/>
+      </g>
+      <circle cx="458" cy="294" r="9" fill="#1B3B6F"/><text class="cn" x="458" y="298">8</text>
+
+      <g class="ctl" data-id="util" role="button" tabindex="0" aria-label="Botón UTIL">
+        <rect class="ring" x="502" y="244" width="62" height="36" rx="4"/>
+        <rect class="cap" x="506" y="248" width="54" height="28" rx="5"/>
+        <text class="kb" x="533" y="266" font-size="11">UTIL</text>
+        <rect class="hit" x="502" y="244" width="62" height="36"/>
+      </g>
+      <circle cx="533" cy="294" r="9" fill="#1B3B6F"/><text class="cn" x="533" y="298">9</text>
+
+      <rect x="560" y="240" width="176" height="68" rx="6" fill="#BEC2C6" stroke="#9BA0A5"/>
+
+      <g class="ctl" data-id="output" role="button" tabindex="0" aria-label="Tecla ON de salida">
+        <rect class="ring" x="674" y="208" width="48" height="32" rx="4"/>
+        <rect class="cap" x="678" y="212" width="40" height="24" rx="4"/>
+        <text class="kb" x="698" y="228" font-size="11">ON</text>
+        <rect class="hit" x="672" y="206" width="52" height="36"/>
+      </g>
+      <circle cx="660" cy="224" r="9" fill="#1B3B6F"/><text class="cn" x="660" y="228">7</text>
+
+      <g class="ctl" data-id="bnc-sync" role="button" tabindex="0" aria-label="Conector Sync Out">
+        <circle class="ring" cx="604" cy="282" r="26"/>
+        <text class="sl" x="604" y="260" fill="#2C3A4C">Sync Out</text>
+        <circle class="cap" cx="604" cy="282" r="17" fill="#8E9297" stroke="#6E7276"/>
+        <circle cx="604" cy="282" r="9" fill="#3A3E42"/>
+        <circle cx="604" cy="282" r="3" fill="#C9A227"/>
+        <circle class="hit" cx="604" cy="278" r="30"/>
+      </g>
+
+      <g class="ctl" data-id="bnc-out" role="button" tabindex="0" aria-label="Conector Output">
+        <circle class="ring" cx="700" cy="282" r="26"/>
+        <text class="sl" x="700" y="260" fill="#2C3A4C">Output</text>
+        <circle class="cap" cx="700" cy="282" r="17" fill="#8E9297" stroke="#6E7276"/>
+        <circle cx="700" cy="282" r="9" fill="#3A3E42"/>
+        <circle cx="700" cy="282" r="3" fill="#C9A227"/>
+        <text x="722" y="303" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#B0301E">50Ω</text>
+        <circle class="hit" cx="700" cy="278" r="30"/>
+      </g>
+    </svg>
+    </div>
+    <div class="panel-bar">
+      <p>Toca un control</p>
+      <button class="zoom-btn" id="zoom" type="button">Ver en grande ⤢</button>
+    </div>
+  </div>
+
+  <div class="ctl-list">
+
+    <details class="row" id="c-power" data-short="Interruptor de la esquina inferior izquierda: O apagado, | encendido. Al prender vuelve a seno, 1 kHz, 5 Vpp y offset 0."><summary><span class="badge">01</span><span class="nm">Encendido</span><span class="chev">+</span></summary><div class="lcd">
+      <p>Es el interruptor cuadrado de la esquina inferior izquierda, marcado con <b>O</b> (apagado) y <b>|</b> (encendido). Al prender, el equipo siempre recupera la configuración de fábrica: onda senoidal, 1.0000 kHz, 5.00 Vpp y offset en 0.00 V.</p>
+      <div class="tip"><b>En la práctica</b>Para medidas que necesiten precisión, dale unos 15 minutos de calentamiento antes de confiar en el valor.</div></div></details>
+
+    <details class="row" id="c-lcd" data-short="Muestra frecuencia, amplitud y el dibujo de la onda. El renglón de abajo son las etiquetas de F1 a F4; la que está en negro es lo que estás editando."><summary><span class="badge">02</span><span class="nm">Pantalla</span><span class="chev">+</span></summary><div class="lcd">
+      <p>Matriz de 124 × 32 puntos. A la izquierda te muestra frecuencia y amplitud; a la derecha, un dibujito de la onda que tienes seleccionada. En el renglón de abajo aparecen las etiquetas que corresponden a F1, F2, F3 y F4, y la que está en negro es el parámetro que estás editando en ese momento.</p>
+      <div class="tip"><b>En la práctica</b>Si se ve muy tenue, entra a UTIL y ajusta F4 (INTENSITY), de 1 a 9.</div></div></details>
+
+    <details class="row" id="c-fkeys" data-short="Hacen lo que diga la etiqueta que tienen encima en la pantalla. Cambian según el menú en el que estés."><summary><span class="badge">03</span><span class="nm">F1 · F2 · F3 · F4</span><span class="chev">+</span></summary><div class="lcd">
+      <p>No tienen función fija: cada una hace lo que dice la etiqueta que aparece justo encima de ella en la pantalla. En el menú de una onda son FREQ, AMPL, OFST y SYM; dentro de UTIL o SWEEP cambian a otra cosa.</p>
+      <div class="tip"><b>En la práctica</b>¿No sabes en qué menú estás? Mira el renglón de abajo de la pantalla: esas palabras son tus F1 a F4.</div></div></details>
+
+    <details class="row" id="c-wave" data-short="Eligen la onda de salida. SINE y SQUARE llegan a 12 MHz; RAMP solo hasta 1 MHz."><summary><span class="badge">04</span><span class="nm">SINE · RAMP · SQUARE</span><span class="chev">+</span></summary><div class="lcd">
+      <p>La columna de tres botones a la derecha de la pantalla elige la onda de salida: senoidal, rampa/triangular o cuadrada. Al presionar cualquiera, la pantalla abre el menú de esa onda con sus parámetros.</p>
+      <div class="tip"><b>En la práctica</b>SINE y SQUARE llegan a 12 MHz, pero RAMP solo hasta 1 MHz. Arriba de eso marca error.</div></div></details>
+
+    <details class="row" id="c-knob" data-short="Sube o baja el dígito donde está parado el cursor. Es el ajuste fino, sin volver a teclear."><summary><span class="badge">05</span><span class="nm">Perilla</span><span class="chev">+</span></summary><div class="lcd">
+      <p>La perilla plateada de la esquina superior derecha. Sube o baja el valor que estás editando, moviendo únicamente el dígito donde está parado el cursor. Sirve para ajustar fino sin volver a teclear todo el número.</p>
+      <div class="tip"><b>En la práctica</b>¿Se mueve de a saltos muy grandes o muy chicos? No es la perilla: es la posición del cursor.</div></div></details>
+
+    <details class="row" id="c-cursor" data-short="Mueven el cursor entre los dígitos, y con eso decides el tamaño del paso de la perilla."><summary><span class="badge">06</span><span class="nm">Cursor ◁ ▷</span><span class="chev">+</span></summary><div class="lcd">
+      <p>Las dos flechas debajo de la perilla. Mueven el cursor entre los dígitos del valor en pantalla, y con eso decides el tamaño del paso con el que la perilla va a mover el número.</p>
+      <div class="tip"><b>En la práctica</b>Cursor en las unidades: pasos de 1 Hz. Cursor en los miles: pasos de 1 kHz.</div></div></details>
+
+    <details class="row" id="c-output" data-short="Habilita la señal en el Output y se ilumina cuando está activa. Si el osciloscopio no muestra nada, revisa aquí primero."><summary><span class="badge">07</span><span class="nm">ON (salida)</span><span class="chev">+</span></summary><div class="lcd">
+      <p>El botón chico que está justo arriba del conector Output. Habilita o deshabilita la señal: se ilumina cuando la salida está activa. Si está apagado, el equipo está configurado pero no sale nada por el BNC.</p>
+      <div class="tip"><b>En la práctica</b>Lo primero que hay que revisar cuando el osciloscopio no muestra nada. Con UTIL → F3 (OUT-ON) defines si arranca en ON u OFF.</div></div></details>
+
+    <details class="row" id="c-sweep" data-short="Menú de barrido: lo activas, eliges lineal o logarítmico y fijas frecuencia de inicio y fin."><summary><span class="badge">08</span><span class="nm">SWEEP</span><span class="chev">+</span></summary><div class="lcd">
+      <p>Abre el menú de barrido, donde el equipo recorre solo un rango de frecuencias. Ahí lo activas, eliges si es lineal o logarítmico y fijas las frecuencias de inicio y fin.</p>
+      <div class="tip"><b>En la práctica</b>El tiempo de barrido va de 20 ms a 100 s. Muy útil para levantar la respuesta en frecuencia de un filtro.</div></div></details>
+
+    <details class="row" id="c-util" data-short="RECALL, STORE, OUT-ON e INTENSITY. El buffer 0 es el de fábrica y regresa todo a como estaba."><summary><span class="badge">09</span><span class="nm">UTIL</span><span class="chev">+</span></summary><div class="lcd">
+      <p>Menú de utilidades: RECALL para cargar una configuración guardada, STORE para guardar la actual, OUT-ON para el estado de la salida al encender e INTENSITY para el contraste.</p>
+      <div class="tip"><b>En la práctica</b>El buffer 0 es la configuración de fábrica y no se puede sobrescribir. Un RECALL 0 regresa todo a como estaba al inicio.</div></div></details>
+
+    <details class="row" id="c-units" data-short="Cierran el número tecleado y le dan unidad: MHz/ns/V, KHz/µs/mV, Hz/ms, mHz/s. ENTER es para valores sin unidad. Sin unidad, el valor no se aplica."><summary><span class="badge">10</span><span class="nm">Unidades y ENTER</span><span class="chev">+</span></summary><div class="lcd">
+      <p>La columna azul a la derecha del teclado cierra el número que acabas de teclear y le da su unidad. Cada tecla trae varias leyendas y el equipo toma la que corresponde al parámetro que estás editando: <b>MHz / ns / V</b>, <b>KHz / µs / mV</b>, <b>Hz / ms</b> y <b>mHz / s</b>. Si estás en frecuencia toma la de frecuencia, si estás en amplitud toma la de voltaje. La tecla <b>ENTER</b> confirma los valores que no llevan unidad, como el número de memoria o el porcentaje del ciclo de trabajo.</p>
+      <div class="tip"><b>En la práctica</b>El error más común del laboratorio: teclear el número y no presionar la unidad. Sin ella, el valor nunca se aplica.</div></div></details>
+
+    <details class="row" id="c-keypad" data-short="Las teclas blancas, para meter valores directo. Siempre cierra la cifra con su tecla de unidad."><summary><span class="badge">11</span><span class="nm">Teclado numérico</span><span class="chev">+</span></summary><div class="lcd">
+      <p>Las teclas blancas, para meter valores directo. Tecleas la cifra y la cierras con la tecla de unidad correspondiente. Es más rápido que la perilla cuando el valor nuevo es muy distinto al que está.</p>
+      <div class="tip"><b>En la práctica</b>Si te equivocaste a media captura, vuelve a entrar al parámetro con su tecla F y escribe de nuevo desde cero.</div></div></details>
+
+    <details class="row" id="c-bnc-out" data-short="Salida principal, fuente de 50 Ω. En un osciloscopio de 1 MΩ vas a ver casi el doble de la amplitud programada."><summary><span class="badge">BNC</span><span class="nm">Output</span><span class="chev">+</span></summary><div class="lcd">
+      <p>El conector de la derecha, el que trae el <b>50Ω</b> en rojo. Por aquí sale la señal que configuraste. Es una fuente de 50 Ω y los valores de amplitud de la pantalla suponen una carga de 50 Ω del otro lado.</p>
+      <div class="tip"><b>En la práctica</b>Conectado a un osciloscopio de 1 MΩ vas a ver casi el doble de la amplitud programada.</div></div></details>
+
+    <details class="row" id="c-bnc-sync" data-short="Pulso TTL positivo en cada ciclo, para disparar el osciloscopio. No es la señal de trabajo."><summary><span class="badge">BNC</span><span class="nm">Sync Out</span><span class="chev">+</span></summary><div class="lcd">
+      <p>El conector de la izquierda. Entrega un pulso TTL positivo en cada ciclo de la onda, a la misma frecuencia que la señal principal. Sirve para disparar el osciloscopio o sincronizar otro instrumento.</p>
+      <div class="tip"><b>En la práctica</b>No es la señal de trabajo: aquí siempre sale un pulso cuadrado TTL, sin importar qué onda hayas elegido.</div></div></details>
+
+  </div>
+  <a class="top" href="#top">↑ Inicio</a>
+</section>
+
+<section id="pasos">
+  <div class="sec-head"><span class="sec-num">02</span><h2>Sacar una señal</h2></div>
+  <ol class="steps">
+    <li><b>Enciende y espera.</b><span>Arranca en senoidal, 1.0000 kHz, 5.00 Vpp, offset 0.00 V. Para medidas serias, 15 minutos de estabilización.</span></li>
+    <li><b>Elige la forma de onda.</b><span>SINE, RAMP o SQUARE. Al presionarla aparece abajo su menú: FREQ, AMPL, OFST y, si es cuadrada, SYM.</span></li>
+    <li><b>Pon la frecuencia.</b><span>F1 (FREQ) → teclea el número → cierra con MHz, KHz, Hz o mHz. Sin la unidad, el valor no se aplica.</span></li>
+    <li><b>Pon la amplitud.</b><span>F2 (AMPL) → número → la tecla de V o mV. Si vas a un osciloscopio, lee antes la nota de los 50 Ω.</span></li>
+    <li><b>Offset, solo si lo necesitas.</b><span>F3 (OFST) suma un nivel de DC. Para quitarlo, vuelve a entrar y déjalo en 0.</span></li>
+    <li><b>Activa la salida.</b><span>Presiona ON, arriba del conector Output: se ilumina cuando la señal ya está saliendo.</span></li>
+  </ol>
+  <a class="top" href="#top">↑ Inicio</a>
+</section>
+
+<section id="menus">
+  <div class="sec-head"><span class="sec-num">03</span><h2>Los tres menús</h2></div>
+  <p class="lede">Las F1–F4 hacen lo que diga la etiqueta que tienen encima. Cambia según el menú.</p>
+
+  <details class="blk" open><summary>Menú de forma de onda</summary><div class="bd"><div class="tbl">
+    <div class="r"><div class="k">F1 · FREQ</div><div class="v">Frecuencia de salida.</div></div>
+    <div class="r"><div class="k">F2 · AMPL</div><div class="v">Amplitud pico a pico.</div></div>
+    <div class="r"><div class="k">F3 · OFST</div><div class="v">Nivel de DC sumado a la onda.</div></div>
+    <div class="r"><div class="k">F4 · SYM</div><div class="v">Ciclo de trabajo. Solo con onda cuadrada, de 20 % a 80 % y hasta 1 MHz.</div></div>
+  </div></div></details>
+
+  <details class="blk"><summary>UTIL</summary><div class="bd">
+    <div class="tbl">
+      <div class="r"><div class="k">F1 · RECALL</div><div class="v">Carga una configuración guardada. Buffers 0 a 9; el 0 es el de fábrica, de solo lectura.</div></div>
+      <div class="r"><div class="k">F2 · STORE</div><div class="v">Guarda la configuración actual en un buffer del 1 al 9.</div></div>
+      <div class="r"><div class="k">F3 · OUT-ON</div><div class="v">Define si la salida arranca activada o desactivada al encender el equipo.</div></div>
+      <div class="r"><div class="k">F4 · INTENSITY</div><div class="v">Contraste de la pantalla, de 1 a 9.</div></div>
+    </div>
+    <div class="warn"><b>Ojo con STORE</b><p>Si el buffer ya tenía algo guardado, el equipo lo sobrescribe sin preguntar.</p></div>
+  </div></details>
+
+  <details class="blk"><summary>SWEEP (barrido)</summary><div class="bd"><div class="tbl">
+    <div class="r"><div class="k">F1 · ON/OFF</div><div class="v">Activa o desactiva el barrido.</div></div>
+    <div class="r"><div class="k">F2 · LIN</div><div class="v">Barrido lineal.</div></div>
+    <div class="r"><div class="k">F3 · LOG</div><div class="v">Barrido logarítmico.</div></div>
+    <div class="r"><div class="k">F4 · SET</div><div class="v">Frecuencia de inicio y de fin. El tiempo de barrido va de 20 ms a 100 s.</div></div>
+  </div></div></details>
+  <a class="top" href="#top">↑ Inicio</a>
+</section>
+
+<section id="ohms">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Los 50 Ω</h2></div>
+  <p class="lede">Por qué el osciloscopio te muestra el doble de lo que programaste.</p>
+  <div class="bd">
+    <p>La salida del 4013B es una fuente de 50 Ω, y por eso el conector trae el <b>50Ω</b> impreso en rojo. Todos los valores de amplitud de la pantalla suponen que del otro lado hay una carga de 50 Ω.</p>
+    <ul>
+      <li>Si conectas a la entrada de un osciloscopio (1 MΩ), la carga es prácticamente un circuito abierto y la señal real sale cerca del <b>doble</b>: 5 Vpp en pantalla se ven como ~10 Vpp.</li>
+      <li><b>Opción A:</b> pon una terminación de 50 Ω en la entrada del osciloscopio, o usa el acoplamiento de 50 Ω si tu osciloscopio lo trae.</li>
+      <li><b>Opción B:</b> déjalo en 1 MΩ y ten claro que estás viendo el doble.</li>
+      <li>Usa cable coaxial de 50 Ω (tipo RG58U), lo más corto posible. A frecuencias altas, un cable mal terminado deforma la onda.</li>
+    </ul>
+    <div class="tbl">
+      <div class="r"><div class="k">Output</div><div class="v">La señal principal: la onda que configuraste.</div></div>
+      <div class="r"><div class="k">Sync Out</div><div class="v">Pulso TTL positivo por cada ciclo, a la misma frecuencia. Para disparar el osciloscopio o sincronizar otro equipo. No es la señal que quieres medir.</div></div>
+    </div>
+  </div>
+  <a class="top" href="#top">↑ Inicio</a>
+</section>
+
+<section id="errores">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Errores</h2></div>
+  <div class="bd">
+    <div class="tbl">
+      <div class="r"><div class="k">Out of range</div><div class="v">El valor que tecleaste está fuera de los límites del equipo.</div></div>
+      <div class="r"><div class="k">Setting Conflict</div><div class="v">El valor choca con otro parámetro. Casi siempre es la combinación de amplitud y offset.</div></div>
+      <div class="r"><div class="k">Empty location</div><div class="v">Hiciste RECALL de un buffer donde no hay nada guardado.</div></div>
+    </div>
+    <p>La restricción de amplitud + offset depende del rango de amplitud en el que estés:</p>
+    <div class="tbl">
+      <div class="r"><div class="k">1.01 V – 10.00 V</div><div class="v"><span class="m">(Vpp / 2) + |offset| ≤ 5 V</span></div></div>
+      <div class="r"><div class="k">0.101 V – 1 V</div><div class="v"><span class="m">(Vpp / 2) + |offset| ≤ 0.5 V</span></div></div>
+      <div class="r"><div class="k">0.010 V – 0.100 V</div><div class="v"><span class="m">(Vpp / 2) + |offset| ≤ 0.05 V</span></div></div>
+    </div>
+    <p>Ejemplo: 8 Vpp con 2 V de offset da 4 + 2 = 6, se pasa de 5, y por eso marca conflicto. Baja la amplitud o el offset.</p>
+  </div>
+  <a class="top" href="#top">↑ Inicio</a>
+</section>
+
+<section id="limites">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Límites</h2></div>
+  <div class="bd"><div class="tbl">
+    <div class="r"><div class="k">Seno y cuadrada</div><div class="v">0.1 Hz a 12 MHz</div></div>
+    <div class="r"><div class="k">Triangular / rampa</div><div class="v">0.1 Hz a 1 MHz únicamente</div></div>
+    <div class="r"><div class="k">Resolución de frecuencia</div><div class="v">5 dígitos o 100 mHz</div></div>
+    <div class="r"><div class="k">Exactitud de frecuencia</div><div class="v">0.01 % ± 0.186 Hz</div></div>
+    <div class="r"><div class="k">Amplitud</div><div class="v">10 mVpp a 10 Vpp en 50 Ω · 20 mVpp a 20 Vpp en circuito abierto</div></div>
+    <div class="r"><div class="k">Exactitud de amplitud</div><div class="v">± 2 % ± 20 mV entre 1.01 V y 10 V</div></div>
+    <div class="r"><div class="k">Offset DC</div><div class="v">± 4.5 V en 50 Ω, resolución 10 mV</div></div>
+    <div class="r"><div class="k">Impedancia de salida</div><div class="v">50 Ω</div></div>
+    <div class="r"><div class="k">Subida / bajada</div><div class="v">Menos de 20 ns en onda cuadrada</div></div>
+    <div class="r"><div class="k">Ciclo de trabajo</div><div class="v">20 % a 80 %, hasta 1 MHz, solo en cuadrada</div></div>
+    <div class="r"><div class="k">Tiempo de barrido</div><div class="v">20 ms a 100 s</div></div>
+    <div class="r"><div class="k">Memorias</div><div class="v">9 configuraciones (buffers 1 a 9)</div></div>
+  </div></div>
+  <a class="top" href="#top">↑ Inicio</a>
+</section>
+
+<section id="seguridad">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Antes de conectar</h2></div>
+  <div class="bd">
+    <div class="warn"><b>Tierra</b><p>El equipo se aterriza por el tercer pin del cable de corriente. Nunca lo conectes con adaptador de dos patas ni a un contacto sin tierra: sin ese aterrizaje, hasta las perillas pueden dar toque.</p></div>
+    <ul>
+      <li>La salida está protegida contra corto, pero <b>no es una entrada</b>: no le metas la fuente de alimentación ni la salida de otro generador.</li>
+      <li>Si hay voltaje de DC en la carga, pon un capacitor de acoplamiento en serie.</li>
+      <li>No abras el equipo ni le cambies partes. Si algo falla, repórtalo con el encargado del laboratorio.</li>
+      <li>Al terminar: salida en OFF, quita los cables y apaga.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <p>Guía del generador de funciones B&amp;K Precision 4013B, resumida del manual de usuario 4007B/4013B.<br>
+  Manual completo (PDF, inglés): <a href="https://bkpmedia.s3.amazonaws.com/downloads/manuals/en-us/4007B_4013B_manual.pdf">4007B_4013B_manual.pdf</a><br>
+  El manual oficial y el encargado del laboratorio mandan sobre esta guía.<br>
+  Versión 1.0 · Agosto de 2026.</p>
+</footer>
+
+</div>
+
+<div class="fs" id="fs" hidden>
+  <div class="fs-rot" id="fsRot">
+    <button class="fs-close" id="fsClose" type="button">Cerrar ✕</button>
+    <span class="fs-tip" id="fsTip">Toca cualquier control</span>
+    <div class="pop" id="pop" hidden></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var svg   = document.getElementById('svgPanel');
+  var host  = document.getElementById('panelHost');
+  var fs    = document.getElementById('fs');
+  var rot   = document.getElementById('fsRot');
+  var pop   = document.getElementById('pop');
+  var tip   = document.getElementById('fsTip');
+  var rows  = Array.prototype.slice.call(document.querySelectorAll('.row'));
+  var ctls  = Array.prototype.slice.call(document.querySelectorAll('.ctl'));
+  var VB_FULL = {minx:0, miny:0, w:800, h:372};
+  /* Recorte: solo el área crema de controles (el rect original es
+     x=72 y=28 w=668 h=300), con un pequeño margen de seguridad. */
+  var VB_CROP = {minx:68, miny:24, w:676, h:308};
+  var VB_MINX = VB_FULL.minx, VB_MINY = VB_FULL.miny, VB_W = VB_FULL.w, VB_H = VB_FULL.h;
+  var RATIO = VB_W / VB_H, activeId = null, activeG = null, cropped = false;
+
+  function setCrop(on){
+    cropped = on;
+    var vb = on ? VB_CROP : VB_FULL;
+    VB_MINX = vb.minx; VB_MINY = vb.miny; VB_W = vb.w; VB_H = vb.h;
+    RATIO = VB_W / VB_H;
+    svg.setAttribute('viewBox', vb.minx + ' ' + vb.miny + ' ' + vb.w + ' ' + vb.h);
+  }
+
+  var DATA = {};
+  rows.forEach(function(r){
+    var id = r.id.replace(/^c-/,'');
+    DATA[id] = {
+      badge: r.querySelector('.badge').textContent,
+      title: r.querySelector('.nm').textContent,
+      short: r.getAttribute('data-short') || r.querySelector('.lcd p').textContent
+    };
+  });
+
+  function highlight(id){
+    activeId = id;
+    ctls.forEach(function(g){ g.classList.toggle('on', g.dataset.id === id); });
+  }
+
+  /* --- lista de abajo (modo normal) --- */
+  rows.forEach(function(r){
+    r.addEventListener('toggle', function(){
+      if(r.open) rows.forEach(function(o){ if(o !== r) o.open = false; });
+      var open = null;
+      rows.forEach(function(o){ if(o.open) open = o.id.replace(/^c-/,''); });
+      if(fs.hidden) highlight(open);
+    });
+  });
+
+  /* --- globo en pantalla completa --- */
+  function hidePop(){ pop.hidden = true; activeG = null; highlight(null); }
+
+  function placePop(g){
+    var b = g.getBBox();
+    var sc = svg.getBoundingClientRect().width / VB_W;
+    if(!sc) return;
+    var W = rot.clientWidth, H = rot.clientHeight;
+    var bx = (b.x - VB_MINX)*sc, by = (b.y - VB_MINY)*sc, bw = b.width*sc, bh = b.height*sc;
+
+    pop.style.fontSize = Math.max(9, Math.min(15, W*0.0185)) + 'px';
+    pop.style.maxWidth = Math.min(W*0.34, 300) + 'px';
+    pop.style.left = '0px'; pop.style.top = '0px';
+
+    var pw = pop.offsetWidth, ph = pop.offsetHeight;
+    var gap = Math.max(8, W*0.012), left, top, cls;
+
+    if(bx + bw + gap + pw <= W - 6){ left = bx + bw + gap; cls = 'pr'; }
+    else if(bx - gap - pw >= 6){ left = bx - gap - pw; cls = 'pl'; }
+    else {
+      left = Math.min(Math.max(bx + bw/2 - pw/2, 6), Math.max(6, W - pw - 6));
+      cls = (by + bh + gap + ph <= H - 6) ? 'pb' : 'pt';
+    }
+    if(cls === 'pr' || cls === 'pl') top = by + bh/2 - ph/2;
+    else if(cls === 'pb') top = by + bh + gap;
+    else top = by - gap - ph;
+    top = Math.min(Math.max(top, 6), Math.max(6, H - ph - 6));
+
+    pop.className = 'pop ' + cls;
+    pop.style.left = left + 'px';
+    pop.style.top  = top + 'px';
+    pop.style.setProperty('--cy', Math.min(Math.max(by + bh/2 - top, 10), Math.max(10, ph - 10)) + 'px');
+  }
+
+  function showPop(g){
+    var d = DATA[g.dataset.id];
+    if(!d) return;
+    if(activeG === g){ hidePop(); return; }
+    activeG = g;
+    pop.innerHTML = '<h4><span class="num">'+d.badge+'</span>'+d.title+'</h4><p>'+d.short+'</p>';
+    pop.hidden = false;
+    highlight(g.dataset.id);
+    placePop(g);
+    tip.style.visibility = 'hidden';
+  }
+
+  ctls.forEach(function(g){
+    function go(e){
+      if(e) e.stopPropagation();
+      if(!fs.hidden){ showPop(g); return; }
+      var r = document.getElementById('c-' + g.dataset.id);
+      if(!r) return;
+      r.open = true;
+      r.scrollIntoView({block:'center', behavior:'smooth'});
+    }
+    g.addEventListener('click', go);
+    g.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go(e); }
+    });
+  });
+
+  /* --- tamaño real de la pantalla completa (JS, no CSS dvh/dvw) ---
+     El navegador embebido de WhatsApp en iOS no calcula bien dvh/dvw,
+     así que medimos el viewport real a mano. */
+  function viewportSize(){
+    var vv = window.visualViewport;
+    var w = (vv && vv.width)  || window.innerWidth  || document.documentElement.clientWidth;
+    var h = (vv && vv.height) || window.innerHeight || document.documentElement.clientHeight;
+    return {w:w, h:h};
+  }
+  function sizeFS(){
+    if(fs.hidden) return;
+    var v = viewportSize();
+    var portrait = v.h >= v.w;
+    fs.style.width  = v.w + 'px';
+    fs.style.height = v.h + 'px';
+    if(portrait){
+      /* rotado 90°: el ancho "local" pasa a ser el alto en pantalla.
+         Usamos "cover" (max) en vez de "contain" (min) para llenar
+         toda la pantalla, recortando el sobrante si no coincide
+         exactamente la proporción. */
+      var w = Math.max(v.h, v.w * RATIO);
+      rot.style.width  = w + 'px';
+      rot.style.height = 'auto';
+    } else {
+      var w2 = Math.max(v.w, v.h * RATIO);
+      rot.style.width  = w2 + 'px';
+      rot.style.height = 'auto';
+    }
+  }
+
+  /* --- abrir / cerrar pantalla completa --- */
+  var zoom = document.getElementById('zoom');
+  function openFS(){
+    rot.insertBefore(svg, rot.firstChild);
+    fs.hidden = false;
+    document.body.classList.add('lock');
+    tip.style.visibility = 'visible';
+    highlight(null);
+    setCrop(true);
+    sizeFS();
+    try{
+      var p = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+      if(p && p.then) p.then(function(){
+        if(screen.orientation && screen.orientation.lock){
+          var q = screen.orientation.lock('landscape');
+          if(q && q.catch) q.catch(function(){});
+        }
+      }).catch(function(){});
+    }catch(e){}
+  }
+  function closeFS(){
+    hidePop();
+    host.appendChild(svg);
+    fs.hidden = true;
+    fs.style.width = ''; fs.style.height = '';
+    rot.style.width = ''; rot.style.height = '';
+    setCrop(false);
+    document.body.classList.remove('lock');
+    try{
+      if(screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+      if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+    }catch(e){}
+  }
+  zoom.addEventListener('click', openFS);
+  document.getElementById('fsClose').addEventListener('click', function(e){ e.stopPropagation(); closeFS(); });
+  fs.addEventListener('click', function(){ if(!pop.hidden) hidePop(); });
+  pop.addEventListener('click', function(e){ e.stopPropagation(); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Escape' || fs.hidden) return;
+    if(!pop.hidden) hidePop(); else closeFS();
+  });
+
+  function reflow(){
+    sizeFS();
+    if(!fs.hidden && activeG) placePop(activeG);
+  }
+  window.addEventListener('resize', reflow);
+  window.addEventListener('orientationchange', function(){ setTimeout(reflow, 250); });
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', reflow);
+  }
+
+  window.addEventListener('beforeprint', function(){
+    if(!fs.hidden) closeFS();
+    document.querySelectorAll('details').forEach(function(d){ d.open = true; });
+  });
+})();
+</script>
+</body>
+</html>
